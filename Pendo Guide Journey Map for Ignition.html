@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ignition Migration — Customer Journey Map</title>
+<style>
+  :root {
+    --brand: #1F4E79;
+    --accent: #2E75B6;
+    --soft: #D9E2F3;
+    --softer: #EAF1FB;
+    --warn: #C55A11;
+    --green: #2E7D4F;
+    --gray: #595959;
+    --lightgray: #CCCCCC;
+    --bg: #F7F9FC;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Calibri, Arial, sans-serif;
+    color: #222;
+    background: var(--bg);
+    line-height: 1.45;
+  }
+  header {
+    background: linear-gradient(135deg, var(--brand), var(--accent));
+    color: white;
+    padding: 28px 40px;
+  }
+  header h1 { margin: 0 0 4px; font-size: 26px; font-weight: 700; }
+  header .sub { font-size: 14px; opacity: 0.9; }
+  header .meta { font-size: 12px; opacity: 0.75; margin-top: 8px; }
+
+  .wrap { max-width: 1400px; margin: 0 auto; padding: 24px 32px 64px; }
+
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 18px;
+    background: white; border: 1px solid var(--lightgray);
+    border-radius: 8px; padding: 14px 18px; margin-bottom: 24px;
+    font-size: 13px;
+  }
+  .legend .swatch {
+    display: inline-block; width: 16px; height: 16px; border-radius: 3px;
+    margin-right: 6px; vertical-align: middle;
+  }
+  .swatch.gtcx { background: #FFE0B2; border: 1px solid var(--warn); }
+  .swatch.ignition { background: #C8E6C9; border: 1px solid var(--green); }
+  .swatch.email { background: #E1BEE7; border: 1px solid #6A1B9A; }
+  .swatch.system { background: var(--softer); border: 1px solid var(--accent); }
+  .swatch.feedback { background: #FFF59D; border: 1px solid #F9A825; }
+
+  h2.section {
+    color: var(--brand);
+    font-size: 18px;
+    margin: 32px 0 12px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--accent);
+  }
+
+  /* Lane layout */
+  .lanes { display: grid; grid-template-columns: 110px 1fr; gap: 0; }
+  .lane {
+    display: contents;
+  }
+  .lane-label {
+    background: var(--brand); color: white;
+    padding: 14px 10px; font-size: 12px; font-weight: 600;
+    text-align: center; writing-mode: vertical-rl; transform: rotate(180deg);
+    border-bottom: 2px solid white;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .lane-content {
+    background: white; padding: 18px 18px;
+    border-bottom: 2px solid var(--bg);
+    position: relative;
+  }
+
+  .timeline {
+    display: grid; grid-template-columns: repeat(6, 1fr);
+    gap: 12px; align-items: stretch;
+  }
+  .col-header {
+    font-size: 11px; font-weight: 700; color: var(--brand);
+    text-transform: uppercase; letter-spacing: 0.6px;
+    text-align: center; padding-bottom: 6px;
+    border-bottom: 1px dashed var(--lightgray); margin-bottom: 8px;
+  }
+
+  .step {
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 12px;
+    position: relative;
+    border: 1px solid;
+    background: white;
+    min-height: 70px;
+  }
+  .step.gtcx { background: #FFF3E0; border-color: var(--warn); }
+  .step.ignition { background: #E8F5E9; border-color: var(--green); }
+  .step.email { background: #F3E5F5; border-color: #6A1B9A; }
+  .step.system { background: var(--softer); border-color: var(--accent); }
+  .step.feedback { background: #FFFDE7; border-color: #F9A825; }
+  .step.terminal { background: #ECEFF1; border-color: #607D8B; }
+
+  .step .tag {
+    display: inline-block; font-size: 9px; font-weight: 700;
+    padding: 1px 6px; border-radius: 10px;
+    background: rgba(0,0,0,0.08); color: #333;
+    margin-bottom: 4px; letter-spacing: 0.4px;
+  }
+  .step .title { font-weight: 700; margin-bottom: 3px; color: #1c1c1c; }
+  .step .body { color: var(--gray); font-size: 11.5px; }
+  .step .meta { color: var(--gray); font-size: 10.5px; margin-top: 4px; font-style: italic; }
+
+  .arrow {
+    text-align: center; color: var(--accent); font-size: 18px; line-height: 1;
+    align-self: center;
+  }
+
+  /* Decision diamond */
+  .diamond {
+    background: var(--soft); border: 1px solid var(--accent);
+    border-radius: 4px; padding: 8px; font-size: 11.5px;
+    text-align: center; font-weight: 600; color: var(--brand);
+  }
+  .branches { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
+  .branch-label {
+    font-size: 10px; font-weight: 700; color: var(--accent);
+    text-align: center; margin: 4px 0 2px;
+  }
+
+  /* Cadence ribbon */
+  .cadence {
+    margin-top: 14px;
+    background: white; border: 1px solid var(--lightgray);
+    border-radius: 8px; padding: 14px 18px;
+  }
+  .cadence h3 { margin: 0 0 10px; font-size: 14px; color: var(--brand); }
+  .cadence-grid {
+    display: grid; grid-template-columns: repeat(8, 1fr);
+    gap: 6px; align-items: center;
+  }
+  .cadence-cell {
+    border: 1px dashed var(--lightgray); border-radius: 6px;
+    padding: 8px 6px; text-align: center; font-size: 11px;
+    background: #FAFBFD; min-height: 56px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .cadence-cell.modal { background: #FFE0B2; border-color: var(--warn); border-style: solid; }
+  .cadence-cell.banner { background: #FFECB3; border-color: #F9A825; border-style: solid; }
+  .cadence-cell.tooltip { background: #FFF8E1; border-color: #FFB300; border-style: solid; }
+  .cadence-cell.email { background: #E1BEE7; border-color: #6A1B9A; border-style: solid; }
+  .cadence-cell .day { font-weight: 700; color: #333; font-size: 12px; }
+  .cadence-cell .what { font-size: 10.5px; color: #444; margin-top: 2px; }
+
+  /* Rollout grid */
+  table.rollout {
+    width: 100%; border-collapse: collapse; background: white;
+    font-size: 12.5px; margin-top: 10px;
+  }
+  table.rollout th, table.rollout td {
+    border: 1px solid var(--lightgray);
+    padding: 8px 10px; text-align: left; vertical-align: top;
+  }
+  table.rollout th { background: var(--brand); color: white; font-weight: 600; }
+  table.rollout tr:nth-child(even) td { background: var(--softer); }
+  table.rollout .week { font-weight: 700; color: var(--brand); white-space: nowrap; }
+
+  .principles {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 8px;
+  }
+  .principle {
+    background: white; border: 1px solid var(--lightgray);
+    border-radius: 6px; padding: 10px 12px; font-size: 12px;
+  }
+  .principle .num {
+    font-size: 10px; color: var(--accent); font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .principle .name { font-weight: 700; color: #222; margin: 3px 0 4px; }
+  .principle .why { color: var(--gray); font-size: 11.5px; }
+
+  footer {
+    text-align: center; color: var(--gray); font-size: 11px;
+    margin-top: 40px; padding-top: 14px; border-top: 1px solid var(--lightgray);
+  }
+
+  /* Print friendliness */
+  @media print {
+    body { background: white; }
+    header { background: var(--brand) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .step, .cadence-cell, table.rollout th, table.rollout td { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Ignition Migration — Customer Journey Map</h1>
+  <div class="sub">Pendo + Email orchestration from first invite through feedback ask</div>
+  <div class="meta">v1.2 Draft · Wave 1 go-live May 1, 2026 · List-based targeting (Tina's Excel → Pendo) · Balanced cadence · Prepared for Rick Dunn</div>
+</header>
+
+<div class="wrap">
+
+  <div class="legend">
+    <span><span class="swatch gtcx"></span>GTC / GTCx surface</span>
+    <span><span class="swatch ignition"></span>Ignition surface</span>
+    <span><span class="swatch email"></span>Email touchpoint</span>
+    <span><span class="swatch system"></span>System / decision logic</span>
+    <span><span class="swatch feedback"></span>Feedback ask</span>
+  </div>
+
+  <h2 class="section">The journey at a glance</h2>
+
+  <div class="lanes">
+
+    <!-- LANE 1: GTC/X side -->
+    <div class="lane">
+      <div class="lane-label" style="background:var(--warn);">In GTC / GTCx</div>
+      <div class="lane-content">
+        <div class="timeline">
+          <div>
+            <div class="col-header">Day 0 — Email first</div>
+            <div class="step email">
+              <span class="tag">EMAIL</span>
+              <div class="title">Tranche email goes out</div>
+              <div class="body">Per Wave 1 plan — top 20% MRR/engagement first, then expanding weekly.</div>
+              <div class="meta">Owner: Marketing</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="col-header">Day 2+ — In-app invite</div>
+            <div class="step gtcx">
+              <span class="tag">MODAL</span>
+              <div class="title">"Try Ignition" modal</div>
+              <div class="body">Fires on next login ≥48h after email. <strong>Suppressed</strong> entirely if user clicked the email within 7 days.</div>
+              <div class="meta">Dismissal stamps timestamp</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="col-header">Decision</div>
+            <div class="diamond">Did they click through to Ignition?</div>
+            <div class="branches">
+              <div>
+                <div class="branch-label">YES →</div>
+                <div class="step ignition" style="font-size:11px;">
+                  <div class="title">Hands off to Ignition lane ↓</div>
+                </div>
+              </div>
+              <div>
+                <div class="branch-label">NOT YET</div>
+                <div class="step system" style="font-size:11px;">
+                  <div class="title">Add to "Invited, Not Yet Tried"</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="col-header">Day 12 — Reminder #1</div>
+            <div class="step gtcx">
+              <span class="tag">BANNER</span>
+              <div class="title">Top-of-page banner</div>
+              <div class="body">"Customers like yours finish daily checks in half the time."</div>
+              <div class="meta">10 days after modal · dismissible</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="col-header">Day 22 — Reminder #2</div>
+            <div class="step gtcx">
+              <span class="tag">TOOLTIP</span>
+              <div class="title">Corner tooltip</div>
+              <div class="body">"Still on GTC? Ignition has everything here — and more."</div>
+              <div class="meta">Final in-app cold ask</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="col-header">Day 23+ — Pause</div>
+            <div class="step terminal">
+              <span class="tag">PAUSE</span>
+              <div class="title">In-app cold asks pause 45 days</div>
+              <div class="body">Email picks up the conversation. CSM may reach out for top accounts.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LANE 2: Ignition side -->
+    <div class="lane">
+      <div class="lane-label" style="background:var(--green);">In Ignition</div>
+      <div class="lane-content">
+        <div class="timeline">
+          <div>
+            <div class="col-header">Session 1 — Welcome</div>
+            <div class="step ignition">
+              <span class="tag">MODAL</span>
+              <div class="title">Welcome video modal</div>
+              <div class="body">2–3 min highlights. "Watch overview" or "Skip for now".</div>
+              <div class="meta">Always findable from "?" menu after</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="col-header">Session 1 — Tour</div>
+            <div class="step ignition">
+              <span class="tag">GUIDED TOUR</span>
+              <div class="title">4–6 step in-app walkthrough</div>
+              <div class="body">Real UI overlays. Skip per step; resumes where left off.</div>
+              <div class="meta">Tour stays pinned in header until complete</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="col-header">Sessions 2–5 — Tips</div>
+            <div class="step ignition">
+              <span class="tag">TOOLTIP</span>
+              <div class="title">"Did you know" feature spotlights</div>
+              <div class="body">≤ 1 contextual tip per session, tied to current task.</div>
+              <div class="meta">Account-level CSM opt-out available</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="col-header">Session 3 — Resurface</div>
+            <div class="step system">
+              <span class="tag">RULE</span>
+              <div class="title">Auto-resurface tour once</div>
+              <div class="body">If welcome video never viewed and tour not completed, surface again — politely, once.</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="col-header">Day 14 / 3+ sessions</div>
+            <div class="step feedback">
+              <span class="tag">SLIDE-UP</span>
+              <div class="title">Feedback prompt earned</div>
+              <div class="body">2 questions max + "book 15 min" link. Bottom slide-up, not modal.</div>
+              <div class="meta">Resurface only once, after 30 days, if dismissed</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="col-header">Ongoing</div>
+            <div class="step ignition">
+              <span class="tag">PASSIVE</span>
+              <div class="title">"?" menu always available</div>
+              <div class="body">Welcome video, tour, and shortcuts all live here. User-initiated, not interruptive.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LANE 3: Drift-back -->
+    <div class="lane">
+      <div class="lane-label" style="background:#6A1B9A;">Drift-back loop</div>
+      <div class="lane-content">
+        <div class="timeline" style="grid-template-columns: 1fr 1fr 1fr;">
+          <div>
+            <div class="col-header">Trigger</div>
+            <div class="step system">
+              <span class="tag">SEGMENT</span>
+              <div class="title">"Tried, Drifted Back"</div>
+              <div class="body">Used Ignition once, but is back in GTC/X for ≥ 7 days.</div>
+            </div>
+          </div>
+          <div>
+            <div class="col-header">In GTC/X</div>
+            <div class="step gtcx">
+              <span class="tag">TOOLTIP</span>
+              <div class="title">Contextual nudge</div>
+              <div class="body">"This list loads faster in Ignition." → Jump over. Max 2 / 30 days.</div>
+            </div>
+          </div>
+          <div>
+            <div class="col-header">Email assist</div>
+            <div class="step email">
+              <span class="tag">EMAIL</span>
+              <div class="title">"Pick up where you left off"</div>
+              <div class="body">Sent only if tooltip is dismissed twice. Personalized to last activity.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CADENCE RIBBON -->
+  <h2 class="section">User-level cadence — what a single user sees over 30 days</h2>
+  <div class="cadence">
+    <h3>Per-user touchpoint timeline (assuming they never click)</h3>
+    <div class="cadence-grid">
+      <div class="cadence-cell email">
+        <div class="day">Day 0</div>
+        <div class="what">Tranche email</div>
+      </div>
+      <div class="cadence-cell">
+        <div class="day">Day 1</div>
+        <div class="what">Quiet (48h Pendo cooldown)</div>
+      </div>
+      <div class="cadence-cell modal">
+        <div class="day">Day 2+</div>
+        <div class="what">Pendo modal on next login</div>
+      </div>
+      <div class="cadence-cell email">
+        <div class="day">Day 9</div>
+        <div class="what">Email follow-up</div>
+      </div>
+      <div class="cadence-cell banner">
+        <div class="day">Day 12</div>
+        <div class="what">Pendo banner</div>
+      </div>
+      <div class="cadence-cell">
+        <div class="day">Days 13–21</div>
+        <div class="what">Quiet</div>
+      </div>
+      <div class="cadence-cell tooltip">
+        <div class="day">Day 22</div>
+        <div class="what">Pendo tooltip</div>
+      </div>
+      <div class="cadence-cell">
+        <div class="day">Days 23–45</div>
+        <div class="what">Pendo silent · Email may add 1 touch</div>
+      </div>
+    </div>
+    <div style="margin-top:12px; font-size:12px; color:var(--gray);">
+      <strong style="color:var(--brand);">Hard caps that prevent fatigue:</strong>
+      Max 1 proactive guide per session · 24h minimum gap between any two guides ·
+      Max 3 GTC/X invites in 45 days · Drift-back nudges capped at 2 per 30 days ·
+      Global "Messaging Pause" segment for any account a CSM flags.
+    </div>
+  </div>
+
+  <!-- WAVE 1 ROLLOUT MAP -->
+  <h2 class="section">Tranche-aligned rollout — same-day launch, user-level staggering</h2>
+  <table class="rollout">
+    <thead>
+      <tr>
+        <th>Week</th>
+        <th>Dates</th>
+        <th>Tranche receiving new touches</th>
+        <th>Pendo activity across all live tranches</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="week">Week 1</td>
+        <td>May 1–7</td>
+        <td>Priority Targets (top 20%) + 62 committed — <strong>email May 1</strong></td>
+        <td>Week 1: <span style="background:#FFE0B2;padding:0 4px;border-radius:3px;">Pendo modal</span> eligible 48h after each user's email, suppressed on email click</td>
+      </tr>
+      <tr>
+        <td class="week">Week 2</td>
+        <td>May 8–14</td>
+        <td>High Value (next 20%) — <strong>email May 8</strong></td>
+        <td>Week 1: non-clickers entering banner window · Week 2: <span style="background:#FFE0B2;padding:0 4px;border-radius:3px;">modal eligibility active</span></td>
+      </tr>
+      <tr>
+        <td class="week">Week 3</td>
+        <td>May 15–21</td>
+        <td>Mid-Tier (next 30%) — <strong>email May 15</strong></td>
+        <td>Week 1: <span style="background:#FFECB3;padding:0 4px;border-radius:3px;">Banner reminder #1</span> · Week 2: non-clickers nearing banner · Week 3: modal eligibility active</td>
+      </tr>
+      <tr>
+        <td class="week">Week 4</td>
+        <td>May 22–28</td>
+        <td>Long Tail (final 30%) — <strong>email May 22</strong></td>
+        <td>Week 1: <span style="background:#FFF8E1;padding:0 4px;border-radius:3px;">Tooltip reminder #2</span> · Week 2: banner · Week 3: modal eligibility · Week 4: modal eligibility active</td>
+      </tr>
+      <tr>
+        <td class="week">Week 5</td>
+        <td>May 29 – Jun 4</td>
+        <td><em>Cool-off — no new tranches, observe data</em></td>
+        <td>Week 2: tooltip · Week 3: banner · Week 4: modal · continued per-user cadence</td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="font-size:12px; color:var(--gray); margin-top:8px;">
+    <strong style="color:var(--brand);">How we keep email "first" without delaying Pendo:</strong>
+    Both channels launch May 1. At the user level, the Pendo modal is held back <strong>48 hours</strong> after that user's tranche email sends, and <strong>suppressed entirely</strong> if they click the email within 7 days. That way customers who engage via email never get an in-app duplicate, and customers who ignore email still see Pendo on their next login.
+    <br><br>
+    <strong style="color:var(--warn);">Hard dependencies for May 1:</strong>
+    <br>(1) Tina's finalized Wave 1 list is uploaded to Pendo by Jenna as an account-code list with tranche assignments (1–4). Segments reference the uploaded list, so re-uploads flow through automatically.
+    <br>(2) Marketing automation publishes <code>tranche_email_sent_at</code> and <code>tranche_email_clicked_at</code> per user into Pendo metadata. Without those two fields syncing, the suppression rules can't fire.
+  </div>
+
+  <!-- PRINCIPLES STRIP -->
+  <h2 class="section">The eight rules every guide follows</h2>
+  <div class="principles">
+    <div class="principle"><div class="num">Rule 1</div><div class="name">One job per surface</div><div class="why">Invite, orient, celebrate, or ask — pick one.</div></div>
+    <div class="principle"><div class="num">Rule 2</div><div class="name">Exit + memory</div><div class="why">Always dismissible, dismissal always remembered.</div></div>
+    <div class="principle"><div class="num">Rule 3</div><div class="name">Resurface on a schedule</div><div class="why">10–14 day intervals — never on impulse.</div></div>
+    <div class="principle"><div class="num">Rule 4</div><div class="name">Cap the noise</div><div class="why">Max 1 proactive guide per session, globally.</div></div>
+    <div class="principle"><div class="num">Rule 5</div><div class="name">Earn the feedback ask</div><div class="why">3+ sessions or 14 days, whichever comes first.</div></div>
+    <div class="principle"><div class="num">Rule 6</div><div class="name">One message, two channels</div><div class="why">Email + Pendo say the same thing in the same week.</div></div>
+    <div class="principle"><div class="num">Rule 7</div><div class="name">Design for the skeptic</div><div class="why">Calibrate copy and pacing to the busy, the protective.</div></div>
+    <div class="principle"><div class="num">Rule 8</div><div class="name">Instrument first</div><div class="why">No guide ships before its events and segments are verified.</div></div>
+  </div>
+
+  <footer>
+    Ignition Migration · Pendo Messaging Strategy · Visual Journey Map · v1.2 Draft · April 20, 2026 · Go-live May 1 · Targeting via Tina's list
+  </footer>
+</div>
+
+</body>
+</html>
